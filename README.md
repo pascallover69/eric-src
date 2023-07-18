@@ -3,7 +3,7 @@
 # EricBot
 
 ## Community & Support
-[Discord++ Discord Server](https://discord.gg/QnZ4fHd9X5)
+[Discord Server](https://discord.gg/QnZ4fHd9X5)
 
 
 ## Contributing
