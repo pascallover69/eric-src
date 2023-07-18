@@ -16,11 +16,6 @@ int main() {
     dpp::log::filter = dpp::log::info;
     dpp::log::out = &std::cerr;
 
-    std::cout << "Howdy, and thanks for trying out Discord++!\n"
-              << "Feel free to drop into the official server at "
-                 "https://discord.gg/VHAyrvspCx if you have any questions.\n\n"
-              << std::flush;
-
     std::cout << "Starting bot...\n\n";
 
     std::string token = getToken();
@@ -56,45 +51,7 @@ int main() {
     bot->handlers.insert(
         {"READY", [&self](dpp::ReadyEvent ready) { self = *ready.user; }});
 
-    bot->prefix = "~";
-
-    bot->respond("help", "Mention me and I'll echo your message back!");
-
-    bot->respond("about", [&bot](dpp::MessageCreateEvent msg) {
-        std::ostringstream content;
-        content << "Sure thing, "
-                << *(msg.member->nick ? msg.author->username : msg.member->nick)
-                << "!\n"
-                << "I'm a simple bot meant to demonstrate the "
-                   "Discord++ library.\n"
-                << "You can learn more about Discord++ at "
-                   "https://discord.gg/VHAyrvspCx";
-        bot->createMessage()
-            ->channel_id(*msg.channel_id)
-            ->content(content.str())
-            ->run();
-    });
-
-    bot->respond("lookatthis", [&bot](dpp::MessageCreateEvent msg) {
-        std::ifstream ifs("image.jpg", std::ios::binary);
-        if (!ifs) {
-            std::cerr << "Couldn't load file 'image.jpg'!\n";
-            return;
-        }
-        ifs.seekg(0, std::ios::end);
-        std::ifstream::pos_type fileSize = ifs.tellg();
-        ifs.seekg(0, std::ios::beg);
-        auto file = std::make_shared<std::string>(fileSize, '\0');
-        ifs.read(file->data(), fileSize);
-
-        bot->createMessage()
-            ->channel_id(*msg.channel_id)
-            ->content("Look at this photograph")
-            ->filename("image.jpg")
-            ->filetype("image/jpg")
-            ->file(file)
-            ->run();
-    });
+    bot->prefix = ")";
 
     bot->respond("channelinfo", [&bot](dpp::MessageCreateEvent msg) {
         bot->getChannel()
@@ -107,88 +64,6 @@ int main() {
             })
             ->run();
     });
-
-    bot->respond("registerslash", [&bot, &self](dpp::MessageCreateEvent msg) {
-        if (*msg.author->id == 106615803402547200) {
-            bot->createGuildApplicationCommand()
-                ->application_id(*self.id)
-                ->guild_id(*msg.guild_id)
-                ->name("echo")
-                ->description("Echoes what you say")
-                ->options({dpp::ApplicationCommandOption(
-                    dpp::ApplicationCommandOptionType::STRING,
-                    std::string("message"), dpp::omitted, std::string("The message to echo"),
-                    dpp::omitted, true)})
-                ->command_type(dpp::ApplicationCommandType::CHAT_INPUT)
-                ->onRead([](bool error, json res) {
-                    std::cout << res.dump(4) << std::endl;
-                })
-                ->run();
-        }
-    });
-
-    bot->interactionHandlers.insert(
-        {881674285683470376, [&bot](dpp::Interaction msg) {
-             bot->createResponse()
-                 ->interaction_id(*msg.id)
-                 ->interaction_token(*msg.token)
-                 ->interaction_type(
-                     dpp::InteractionCallbackType::CHANNEL_MESSAGE_WITH_SOURCE)
-                 ->data({{
-                     "content",
-                     *std::get<dpp::ApplicationCommandData>(*msg.data).options->at(0).value
-                 }})
-                 ->run();
-         }});
-
-    // Create handler for the MESSAGE_CREATE payload, this receives all messages
-    // sent that the bot can see.
-    bot->handlers.insert(
-        {"MESSAGE_CREATE", [&bot, &self](const dpp::MessageCreateEvent msg) {
-             // Ignore messages from other bots
-             if (msg.webhook_id || (msg.author->bot && *msg.author->bot)) {
-                 return;
-             }
-
-             // Scan through mentions in the message for self
-             bool mentioned = false;
-             for (const dpp::User &mention : *msg.mentions) {
-                 mentioned = mentioned || (*mention.id == *self.id);
-             }
-             if (mentioned) {
-                 // Identify and remove mentions of self from the message
-                 std::string content = *msg.content;
-                 unsigned int oldlength, length = content.length();
-                 do {
-                     oldlength = length;
-                     content = std::regex_replace(
-                         content,
-                         std::regex(R"(<@!?)" + std::to_string(*self.id) +
-                                    R"(> ?)"),
-                         "");
-                     length = content.length();
-                 } while (oldlength > length);
-
-                 // Get the target user's display name
-                 std::string name = *(msg.member->nick ? msg.member->nick
-                                                       : msg.author->username);
-
-                 std::cout << "Echoing " << name << '\n';
-
-                 // Echo the created message
-                 bot->createMessage()
-                     ->channel_id(*msg.channel_id)
-                     ->content(content)
-                     ->run();
-
-                 // Set status to Playing "with [author]"
-                 bot->send(3,
-                           {{"game", {{"name", "with " + name}, {"type", 0}}},
-                            {"status", "online"},
-                            {"afk", false},
-                            {"since", "null"}});
-             }
-         }});
 
     // Create Asio context, this handles async stuff.
     auto aioc = std::make_shared<asio::io_context>();

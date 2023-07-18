@@ -1,14 +1,11 @@
-[![CMake](https://github.com/DiscordPP/echo-bot/workflows/CMake/badge.svg)](https://github.com/DiscordPP/echo-bot/actions?query=workflow%3ACMake)
+[![CMake](https://github.com/pascallover69/eric-src/workflows/CMake/badge.svg)](https://github.com/pascallover69/eric-src/actions?query=workflow%3ACMake)
 
-# Discord++ example bot, Echo<sup>Echo<sup>Echo</sup></sup>
+# EricBot
 
-## Community & Support <sup>Some incredibly nice people here!</sup>
-[Discord++ Discord Server](https://discord.gg/VHAyrvspCx)
+## Community & Support
+[Discord++ Discord Server](https://discord.gg/QnZ4fHd9X5)
 
-## Usage
-
-See [the Wiki](https://github.com/DiscordPP/discordpp/wiki) for setup and configuration
 
 ## Contributing
- * Echo is pretty simple and probably doesn't need much, but if you have a suggestion or spot an issue, make a pull request on Github!
- * Also, this repo needs better jokes.
+ * Eric is pretty simple and probably doesn't need much, but if you have a suggestion or spot an issue, make a pull request on Github!
+ * Also, this repo needs better jokes. :)
