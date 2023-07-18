@@ -3,6 +3,7 @@ build*/
 token.dat
 cmake-build-*/
 scratch.txt
+*~
 
 # Prerequisites
 *.d
